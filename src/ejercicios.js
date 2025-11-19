@@ -1,9 +1,9 @@
 // ============================================
 // EDITOR DE IMÁGENES CON ÁLGEBRA MATRICIAL
 // ============================================
-// Nombre del estudiante: _________________
-// Fecha: _________________
-// Grupo: _________________
+// Nombre del estudiante: David Alonso Romero Medina
+// Fecha: 18/11/25
+// Grupo: 1C
 
 const { PNG } = require('pngjs');
 const fs = require('fs');
@@ -56,39 +56,38 @@ const {
  * // matriz[0][0] = {r: 0, g: 0, b: 128, a: 255}
  */
 function imagenAMatriz(rutaImagen) {
-  // TODO: Implementar la conversión de PNG a matriz
   
   // 1. Leer el archivo PNG
-  // const buffer = fs.readFileSync(rutaImagen);
-  // const png = PNG.sync.read(buffer);
+  const buffer = fs.readFileSync(rutaImagen);
+  const png = PNG.sync.read(buffer);
   
   // 2. Crear la matriz vacía
-  // const matriz = [];
+  const matriz = [];
   
   // 3. Recorrer cada fila (y) y cada columna (x)
-  // for (let y = 0; y < png.height; y++) {
-  //   const fila = [];
-  //   for (let x = 0; x < png.width; x++) {
-  //     // 4. Calcular el índice en el buffer
-  //     const idx = (png.width * y + x) << 2; // equivalente a * 4
-  //     
-  //     // 5. Extraer los valores RGBA
-  //     const pixel = {
-  //       r: png.data[idx],
-  //       g: png.data[idx + 1],
-  //       b: png.data[idx + 2],
-  //       a: png.data[idx + 3]
-  //     };
-  //     
-  //     fila.push(pixel);
-  //   }
-  //   matriz.push(fila);
-  // }
+  for (let y = 0; y < png.height; y++) {
+    const fila = [];
+    for (let x = 0; x < png.width; x++) {
+      // 4. Calcular el índice en el buffer
+      // El buffer es un array lineal: [R,G,B,A, R,G,B,A, ...]
+      // Multiplicamos por 4 porque cada pixel ocupa 4 espacios
+      const idx = (png.width * y + x) << 2; 
+      
+      // 5. Extraer los valores RGBA
+      const pixel = {
+        r: png.data[idx],
+        g: png.data[idx + 1],
+        b: png.data[idx + 2],
+        a: png.data[idx + 3]
+      };
+      
+      fila.push(pixel);
+    }
+    matriz.push(fila);
+  }
   
   // 6. Retornar la matriz
-  // return matriz;
-  
-  return []; // REEMPLAZAR CON TU CÓDIGO
+  return matriz;
 }
 
 /**
@@ -110,41 +109,39 @@ function imagenAMatriz(rutaImagen) {
  * matrizAImagen(matriz, 'imagenes/salida/copia.png');
  */
 function matrizAImagen(matriz, rutaSalida) {
-  // TODO: Implementar la conversión de matriz a PNG
   
   // 1. Validar la matriz
-  // validarMatriz(matriz);
+  validarMatriz(matriz);
   
-  // 2. Obtener dimensiones
-  // const dims = obtenerDimensiones(matriz);
+  // 2. Obtener dimensiones usando la función importada
+  const dims = obtenerDimensiones(matriz);
   
-  // 3. Crear el PNG
-  // const png = new PNG({
-  //   width: dims.columnas,
-  //   height: dims.filas
-  // });
+  // 3. Crear el objeto PNG
+  const png = new PNG({
+    width: dims.columnas,
+    height: dims.filas
+  });
   
-  // 4. Llenar png.data
-  // for (let y = 0; y < dims.filas; y++) {
-  //   for (let x = 0; x < dims.columnas; x++) {
-  //     const idx = (dims.columnas * y + x) << 2;
-  //     const pixel = matriz[y][x];
-  //     
-  //     png.data[idx] = limitarValorColor(pixel.r);
-  //     png.data[idx + 1] = limitarValorColor(pixel.g);
-  //     png.data[idx + 2] = limitarValorColor(pixel.b);
-  //     png.data[idx + 3] = limitarValorColor(pixel.a);
-  //   }
-  // }
+  // 4. Llenar png.data recorriendo nuestra matriz
+  for (let y = 0; y < dims.filas; y++) {
+    for (let x = 0; x < dims.columnas; x++) {
+      const idx = (dims.columnas * y + x) << 2;
+      const pixel = matriz[y][x];
+      
+      // Usamos limitarValorColor para asegurar que esté entre 0 y 255
+      png.data[idx] = limitarValorColor(pixel.r);
+      png.data[idx + 1] = limitarValorColor(pixel.g);
+      png.data[idx + 2] = limitarValorColor(pixel.b);
+      png.data[idx + 3] = limitarValorColor(pixel.a);
+    }
+  }
   
   // 5. Asegurar que existe el directorio de salida
-  // asegurarDirectorio(path.dirname(rutaSalida));
+  asegurarDirectorio(path.dirname(rutaSalida));
   
   // 6. Guardar el archivo
-  // const buffer = PNG.sync.write(png);
-  // fs.writeFileSync(rutaSalida, buffer);
-  
-  // ESCRIBE TU CÓDIGO AQUÍ
+  const buffer = PNG.sync.write(png);
+  fs.writeFileSync(rutaSalida, buffer);
 }
 
 /**
@@ -164,30 +161,28 @@ function matrizAImagen(matriz, rutaSalida) {
  * // Ahora será {r:200, g:200, b:200, a:255} (gris)
  */
 function obtenerCanal(matriz, canal) {
-  // TODO: Implementar extracción de canal
   
   // 1. Validar parámetros
-  // if (!['r', 'g', 'b'].includes(canal)) {
-  //   throw new Error("El canal debe ser 'r', 'g', o 'b'");
-  // }
+  if (!['r', 'g', 'b'].includes(canal)) {
+    throw new Error("El canal debe ser 'r', 'g', o 'b'");
+  }
   
-  // 2. Crear matriz resultado
-  // const resultado = copiarMatriz(matriz);
+  // 2. Crear copia de la matriz para no modificar la original
+  const resultado = copiarMatriz(matriz);
   
-  // 3. Para cada pixel, usar solo el valor del canal seleccionado
-  // for (let i = 0; i < resultado.length; i++) {
-  //   for (let j = 0; j < resultado[i].length; j++) {
-  //     const valor = matriz[i][j][canal];
-  //     resultado[i][j] = {
-  //       r: valor,
-  //       g: valor,
-  //       b: valor,
-  //       a: matriz[i][j].a
-  //     };
-  //   }
-  // }
+  // 3. Para cada pixel, igualar los tres colores al valor del canal elegido
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      const valor = resultado[i][j][canal]; // Obtenemos el valor (ej. el rojo)
+      
+      resultado[i][j].r = valor;
+      resultado[i][j].g = valor;
+      resultado[i][j].b = valor;
+      // El canal alpha (.a) se deja igual
+    }
+  }
   
-  return []; // REEMPLAZAR CON TU CÓDIGO
+  return resultado;
 }
 
 /**
@@ -201,12 +196,15 @@ function obtenerCanal(matriz, canal) {
  * // {ancho: 100, alto: 100, totalPixeles: 10000}
  */
 function obtenerDimensionesImagen(rutaImagen) {
-  // TODO: Obtener dimensiones sin cargar toda la imagen en memoria
   
-  // Pista: Puedes cargar la imagen y usar obtenerDimensiones()
-  // o leer solo el header del PNG
+  const buffer = fs.readFileSync(rutaImagen);
+  const png = PNG.sync.read(buffer);
   
-  return { ancho: 0, alto: 0, totalPixeles: 0 }; // REEMPLAZAR
+  return { 
+    ancho: png.width, 
+    alto: png.height, 
+    totalPixeles: png.width * png.height 
+  };
 }
 
 // ============================================
