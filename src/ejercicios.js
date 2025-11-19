@@ -233,22 +233,26 @@ function obtenerDimensionesImagen(rutaImagen) {
  * const oscuro = ajustarBrillo(matriz, 0.5);    // 50% más oscuro
  */
 function ajustarBrillo(matriz, factor) {
-  // TODO: Implementar ajuste de brillo
   
-  // 1. Crear matriz resultado
-  // const resultado = copiarMatriz(matriz);
+  // 1. Crear una copia para no afectar la imagen original
+  const resultado = copiarMatriz(matriz);
   
-  // 2. Para cada pixel, multiplicar R, G, B por el factor
-  // for (let i = 0; i < resultado.length; i++) {
-  //   for (let j = 0; j < resultado[i].length; j++) {
-  //     resultado[i][j].r = limitarValorColor(matriz[i][j].r * factor);
-  //     resultado[i][j].g = limitarValorColor(matriz[i][j].g * factor);
-  //     resultado[i][j].b = limitarValorColor(matriz[i][j].b * factor);
-  //     // El canal alpha NO se modifica
-  //   }
-  // }
+  // 2. Recorrer cada fila (i) y columna (j)
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      const pixel = resultado[i][j];
+      
+      // 3. Multiplicar cada canal por el escalar 'factor'
+      // Usamos limitarValorColor para asegurar que no pase de 255 ni baje de 0
+      pixel.r = limitarValorColor(pixel.r * factor);
+      pixel.g = limitarValorColor(pixel.g * factor);
+      pixel.b = limitarValorColor(pixel.b * factor);
+      
+      //El canal Alpha (a) NO se multiplica, la transparencia no cambia con el brillo.
+    }
+  }
   
-  return []; // REEMPLAZAR
+  return resultado;
 }
 
 /**
@@ -270,10 +274,24 @@ function ajustarBrillo(matriz, factor) {
  * // Rojo (255,0,0) → Cian (0,255,255)
  */
 function invertirColores(matriz) {
-  // TODO: Implementar inversión de colores
   
-  return []; // REEMPLAZAR
+  const resultado = copiarMatriz(matriz);
+  
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      const pixel = resultado[i][j];
+      
+      // Restamos el valor actual al máximo posible (255)
+      pixel.r = 255 - pixel.r;
+      pixel.g = 255 - pixel.g;
+      pixel.b = 255 - pixel.b;
+      // Alpha se mantiene igual
+    }
+  }
+  
+  return resultado;
 }
+
 
 /**
  * Ejercicio 2.3: Convertir a escala de grises (9 puntos)
@@ -290,18 +308,26 @@ function invertirColores(matriz) {
  * const grises = convertirEscalaGrises(matriz);
  */
 function convertirEscalaGrises(matriz) {
-  // TODO: Implementar conversión a escala de grises
   
-  // Para cada pixel:
-  // 1. Calcular el valor de gris
-  // const gris = 0.299 * pixel.r + 0.587 * pixel.g + 0.114 * pixel.b;
-  // 
-  // 2. Asignar ese valor a los tres canales
-  // pixelNuevo = {r: gris, g: gris, b: gris, a: pixel.a}
+  const resultado = copiarMatriz(matriz);
   
-  return []; // REEMPLAZAR
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      const pixel = resultado[i][j];
+      
+      // 1. Calcular el promedio ponderado (producto punto)
+      const gris = (0.299 * pixel.r) + (0.587 * pixel.g) + (0.114 * pixel.b);
+      
+      // 2. Asignar el mismo valor a R, G y B genera gris
+      pixel.r = gris;
+      pixel.g = gris;
+      pixel.b = gris;
+      // Alpha se mantiene
+    }
+  }
+  
+  return resultado;
 }
-
 // ============================================
 // SECCIÓN 3: TRANSFORMACIONES GEOMÉTRICAS (30 puntos)
 // Aplicar operaciones matriciales para transformar
