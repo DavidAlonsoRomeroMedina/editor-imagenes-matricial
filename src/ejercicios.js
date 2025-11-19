@@ -349,12 +349,22 @@ function convertirEscalaGrises(matriz) {
  * const espejo = voltearHorizontal(matriz);
  */
 function voltearHorizontal(matriz) {
-  // TODO: Implementar volteo horizontal
   
-  // Pista: Puedes usar .reverse() en cada fila
-  // o construir manualmente invirtiendo el orden
+  const resultado = [];
   
-  return []; // REEMPLAZAR
+  // Recorremos cada fila original
+  for (let i = 0; i < matriz.length; i++) {
+    // Creamos una COPIA de la fila (importante usar [...fila] o slice())
+    const filaOriginal = matriz[i];
+    const filaNueva = [...filaOriginal]; // Copia para no afectar la original
+    
+    // Invertimos el orden de la fila nueva
+    filaNueva.reverse();
+    
+    resultado.push(filaNueva);
+  }
+  
+  return resultado;
 }
 
 /**
@@ -373,9 +383,14 @@ function voltearHorizontal(matriz) {
  * const invertido = voltearVertical(matriz);
  */
 function voltearVertical(matriz) {
-  // TODO: Implementar volteo vertical
   
-  return []; // REEMPLAZAR
+  // Hacemos una copia superficial de la matriz (array de filas)
+  const resultado = [...matriz];
+  
+  // Invertimos el orden de las filas
+  resultado.reverse();
+  
+  return resultado; // ¡Así de fácil!
 }
 
 /**
@@ -398,13 +413,32 @@ function voltearVertical(matriz) {
  * const rotada = rotar90Grados(matriz);
  */
 function rotar90Grados(matriz) {
-  // TODO: Implementar rotación de 90 grados
   
-  // Opción 1: Hacer transpuesta manualmente considerando que son objetos
-  // Opción 2: Construir directamente la matriz rotada
-  //   nuevoPixel[j][alto - 1 - i] = pixelOriginal[i][j]
+  // Dimensiones originales
+  const altoOriginal = matriz.length;
+  const anchoOriginal = matriz[0].length;
   
-  return []; // REEMPLAZAR
+  // La nueva matriz tendrá dimensiones intercambiadas
+  // Nueva altura = Ancho original
+  // Nuevo ancho = Alto original
+  const resultado = [];
+
+  // Creamos la estructura vacía rotada
+  for (let x = 0; x < anchoOriginal; x++) {
+    const nuevaFila = [];
+    for (let y = 0; y < altoOriginal; y++) {
+       // La fórmula de rotación 90 grados horario:
+       // El pixel que estaba en (y, x) pasa a (x, alto - 1 - y)
+       // Pero como estamos llenando la NUEVA matriz, leemos desde la vieja:
+       // new[i][j] <-- old[alto - 1 - j][i]
+       
+       const pixelOriginal = matriz[altoOriginal - 1 - y][x];
+       nuevaFila.push(pixelOriginal);
+    }
+    resultado.push(nuevaFila);
+  }
+  
+  return resultado;
 }
 
 // ============================================
