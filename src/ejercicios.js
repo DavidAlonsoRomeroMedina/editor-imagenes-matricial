@@ -466,21 +466,44 @@ function rotar90Grados(matriz) {
  * const mezcla = mezclarImagenes(imagen1, imagen2, 0.5); // 50/50
  */
 function mezclarImagenes(matriz1, matriz2, factor) {
-  // TODO: Implementar mezcla de imágenes
   
-  // 1. Verificar que tengan las mismas dimensiones
-  // const dims1 = obtenerDimensiones(matriz1);
-  // const dims2 = obtenerDimensiones(matriz2);
-  // if (dims1.filas !== dims2.filas || dims1.columnas !== dims2.columnas) {
-  //   throw new Error('Las imágenes deben tener el mismo tamaño');
-  // }
+  // 1. Verificar dimensiones (deben ser iguales para sumarse)
+  const alto = matriz1.length;
+  const ancho = matriz1[0].length;
   
-  // 2. Para cada pixel:
-  // r = r1 * (1 - factor) + r2 * factor
-  // g = g1 * (1 - factor) + g2 * factor
-  // b = b1 * (1 - factor) + b2 * factor
+  const alto2 = matriz2.length;
+  const ancho2 = matriz2[0].length;
   
-  return []; // REEMPLAZAR
+  if (alto !== alto2 || ancho !== ancho2) {
+    throw new Error('Las imágenes deben tener el mismo tamaño');
+  }
+  
+  const resultado = [];
+  
+  // 2. Recorrer ambas matrices simultáneamente
+  for (let y = 0; y < alto; y++) {
+    const fila = [];
+    for (let x = 0; x < ancho; x++) {
+      const p1 = matriz1[y][x];
+      const p2 = matriz2[y][x];
+      
+      // Inverso del factor para la primera imagen
+      const f1 = 1 - factor;
+      
+      // Fórmula de mezcla lineal
+      const nuevoPixel = {
+        r: limitarValorColor(p1.r * f1 + p2.r * factor),
+        g: limitarValorColor(p1.g * f1 + p2.g * factor),
+        b: limitarValorColor(p1.b * f1 + p2.b * factor),
+        a: 255 // Asumimos opacidad total
+      };
+      
+      fila.push(nuevoPixel);
+    }
+    resultado.push(fila);
+  }
+  
+  return resultado;
 }
 
 /**
@@ -500,9 +523,23 @@ function mezclarImagenes(matriz1, matriz2, factor) {
  * const vintage = aplicarSepia(matriz);
  */
 function aplicarSepia(matriz) {
-  // TODO: Implementar filtro sepia
   
-  return []; // REEMPLAZAR
+  const resultado = copiarMatriz(matriz);
+  
+  for (let y = 0; y < resultado.length; y++) {
+    for (let x = 0; x < resultado[y].length; x++) {
+      const pixel = resultado[y][x];
+      const { r, g, b } = pixel; // Guardamos valores originales
+      
+      // Aplicamos la matriz de transformación sepia
+      pixel.r = limitarValorColor(r * 0.393 + g * 0.769 + b * 0.189);
+      pixel.g = limitarValorColor(r * 0.349 + g * 0.686 + b * 0.168);
+      pixel.b = limitarValorColor(r * 0.272 + g * 0.534 + b * 0.131);
+      // Alpha no cambia
+    }
+  }
+  
+  return resultado;
 }
 
 /**
@@ -526,16 +563,49 @@ function aplicarSepia(matriz) {
  * const bordes = detectarBordes(matriz, 50);
  */
 function detectarBordes(matriz, umbral = 50) {
-  // TODO: Implementar detección de bordes
   
-  // 1. Convertir a escala de grises primero
-  // const grises = convertirEscalaGrises(matriz);
+  // 1. Convertimos a grises primero para facilitar la comparación (usamos nuestra función anterior)
+  const grises = convertirEscalaGrises(matriz);
+  const alto = grises.length;
+  const ancho = grises[0].length;
   
-  // 2. Para cada pixel (excepto bordes de la imagen):
-  //    - Comparar con pixel derecho y pixel inferior
-  //    - Si diferencia > umbral, marcar como borde
+  // Creamos una matriz negra base
+  const resultado = [];
   
-  return []; // REEMPLAZAR
+  // Recorremos la imagen hasta PENÚLTIMA fila/columna 
+  // (porque el último pixel no tiene vecino derecho/abajo)
+  for (let y = 0; y < alto; y++) {
+    const fila = [];
+    for (let x = 0; x < ancho; x++) {
+      
+      // Si estamos en el borde derecho o inferior, no podemos comparar, pintamos negro
+      if (y >= alto - 1 || x >= ancho - 1) {
+         fila.push({ r: 0, g: 0, b: 0, a: 255 });
+         continue;
+      }
+
+      const actual = grises[y][x];
+      const derecho = grises[y][x + 1];
+      const abajo = grises[y + 1][x];
+      
+      // Calculamos la "distancia" o diferencia de color
+      // Usamos solo 'r' porque en grises r=g=b
+      const diffDerecha = Math.abs(actual.r - derecho.r);
+      const diffAbajo = Math.abs(actual.r - abajo.r);
+      
+      // Si la diferencia es grande en cualquier dirección, es un borde
+      if (diffDerecha > umbral || diffAbajo > umbral) {
+        // Borde detectado: BLANCO
+        fila.push({ r: 255, g: 255, b: 255, a: 255 });
+      } else {
+        // No hay borde: NEGRO
+        fila.push({ r: 0, g: 0, b: 0, a: 255 });
+      }
+    }
+    resultado.push(fila);
+  }
+  
+  return resultado;
 }
 
 // ============================================
