@@ -1,4 +1,4 @@
-// ============================================
+// ===========================================
 // EDITOR DE IMÁGENES CON ÁLGEBRA MATRICIAL
 // ============================================
 // Nombre del estudiante: David Alonso Romero Medina
